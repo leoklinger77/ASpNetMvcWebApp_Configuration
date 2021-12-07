@@ -1,0 +1,105 @@
+﻿@model ClientPhisycalViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+ <div class="alert alert-danger" role="alert" asp-validation-summary="ModelOnly">
+    </div>
+
+
+<form asp-action="Create" method="post">
+     <h4>Dados Principais</h4>
+    <div class="form-row">
+
+        <div class="form-group col-md-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" type="text" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-3">
+            <label asp-for="Cpf"></label>
+            <input asp-for="Cpf" type="text" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-3">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" type="email" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-3">
+            <label asp-for="BirthDate"></label>
+            <input asp-for="BirthDate" type="date" class="form-control" />
+        </div>
+    </div>
+
+    <h4>Contato</h4>
+    <div class="form-row">
+
+        <div class="form-group col-md-4">
+            <label asp-for="CelHome"></label>
+            <input asp-for="CelHome" type="text" class="form-control" />
+            <span asp-validation-for="CelHome" class="text-danger"></span>
+        </div>
+
+        <div class="form-group col-md-4">
+            <label asp-for="CelCommercial"></label>
+            <input asp-for="CelCommercial" type="text" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-4">
+            <label asp-for="CelSmartPhone"></label>
+            <input asp-for="CelSmartPhone" type="text" class="form-control" />
+        </div>      
+    </div>
+    <h4>Endereço</h4>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label asp-for="Address.ZipCode"></label>
+            <input asp-for="Address.ZipCode" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-8"></div>
+
+        <div class="form-group col-md-8">
+            <label asp-for="Address.Street"></label>
+            <input asp-for="Address.Street" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="Address.Number"></label>
+            <input asp-for="Address.Number" type="text" class="form-control" />
+        </div>
+
+        <div class="form-group col-md-6">
+            <label asp-for="Address.Complement"></label>
+            <input asp-for="Address.Complement" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="Address.Reference"></label>
+            <input asp-for="Address.Reference" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="Address.Neighborhood"></label>
+            <input asp-for="Address.Neighborhood" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="Address.City"></label>
+            <input asp-for="Address.City" type="text" class="form-control" />
+        </div>
+        <div class="form-group col-md-4">
+            <label asp-for="Address.State"></label>
+            <input asp-for="Address.State" type="text" class="form-control" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Entrar</button>
+</form>
+@section Scripts {
+
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+
+<script>
+    SearchZipCode();
+</script>
+}

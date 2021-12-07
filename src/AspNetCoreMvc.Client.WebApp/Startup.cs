@@ -1,32 +1,50 @@
+using AspNetCoreMvc.Client.Domain.Interfaces.Repositorys;
+using AspNetCoreMvc.Client.Domain.Interfaces.Services;
+using AspNetCoreMvc.Client.Domain.Notifications;
+using AspNetCoreMvc.Client.Domain.Services;
+using AspNetCoreMvc.Client.Infrastructure.Data;
+using AspNetCoreMvc.Client.Infrastructure.Repositorys;
+using AspNetCoreMvc.Client.WebApp.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AspNetCoreMvc.Client.WebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IConfiguration Configuration { get; }
+        public Startup(IHostEnvironment hostEnvironment)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(hostEnvironment.ContentRootPath)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{hostEnvironment.EnvironmentName}.json", true, true)
+                .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-        }
+            services.AddAutoMapper(typeof(Startup));
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            services.AddDbContext<ClientContext>(option =>
+                        option.UseSqlServer(Configuration.GetConnectionString("connection")));
+
+            services.AddScoped<INotifierService, NotifierService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<ClientContext>();            
+            
+            services.IdentityConfiguration(Configuration);                                   
+        }
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -35,8 +53,7 @@ namespace AspNetCoreMvc.Client.WebApp
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Home/Error");                
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
@@ -44,6 +61,7 @@ namespace AspNetCoreMvc.Client.WebApp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -51,6 +69,8 @@ namespace AspNetCoreMvc.Client.WebApp
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                endpoints.MapRazorPages();
             });
         }
     }

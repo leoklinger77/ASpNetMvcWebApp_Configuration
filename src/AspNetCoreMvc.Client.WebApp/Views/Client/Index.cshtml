@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ClientViewModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<a asp-action="Create" asp-controller="Client" class="btn btn-primary">Novo Cliente fisico</a>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Email</th>            
+            <th scope="col">Nome</th>            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th scope="row">@item.Id</th>
+                <td>@item.Email</td>
+
+                @if (item is ClientPhisycalViewModel)
+                {
+                    var client = (ClientPhisycalViewModel)item;
+                    <td>@client.Name</td>
+                }
+
+            </tr>
+        }
+
+
+    </tbody>
+</table>

@@ -2,7 +2,9 @@
 using AspNetCoreMvc.Client.Domain.Interfaces.Services;
 using AspNetCoreMvc.Client.Domain.Models;
 using AspNetCoreMvc.Client.Domain.Models.Validations;
+using AspNetCoreMvc.Client.Domain.Notifications;
 using FluentValidation;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AspNetCoreMvc.Client.Domain.Services
@@ -10,25 +12,27 @@ namespace AspNetCoreMvc.Client.Domain.Services
     public class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
+        private readonly INotifierService _notifierService;
 
-        public ClientService(IClientRepository clientRepository)
+        public ClientService(IClientRepository clientRepository, INotifierService notifierService)
         {
             _clientRepository = clientRepository;
+            _notifierService = notifierService;
+        }
+
+        public async Task<ICollection<Models.Client>> ToList()
+        {
+            return await _clientRepository.GetAll();
         }
 
         public async Task NewClient(ClientPhysical clientPhysical)
-        {
-            //TODO Validar a entidade antes de salvar no banco
-            if(RunValidation(new ClientPhisycalValidation(), clientPhysical))
-            {
-                //Gravar uma Notificação de Erro
-                return;
-            }
+        {            
+            if(!RunValidation(new ClientPhisycalValidation(), clientPhysical)) return;
 
             //Validar se CPF já está cadastado no banco
-            if(_clientRepository.GetByCpf(clientPhysical.Cpf).Result != null)
+            if (_clientRepository.GetByCpf(clientPhysical.Cpf).Result != null)
             {
-                //Gravar uma Notificação de Erro
+                _notifierService.AddErro("Cpf já cadastrado no banco de dados.");
                 return;
             }
 
@@ -43,7 +47,10 @@ namespace AspNetCoreMvc.Client.Domain.Services
 
             if (validator.IsValid) return true;
 
-            //Notify(validator);
+            foreach (var item in validator.Errors)
+            {
+                _notifierService.AddErro(item.ErrorMessage);
+            }
 
             return false;
         }
@@ -52,5 +59,7 @@ namespace AspNetCoreMvc.Client.Domain.Services
         {
             _clientRepository.Dispose();
         }
+
+        
     }
 }

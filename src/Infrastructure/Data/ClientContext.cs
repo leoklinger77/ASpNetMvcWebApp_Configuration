@@ -12,7 +12,7 @@ namespace AspNetCoreMvc.Client.Infrastructure.Data
         public ClientContext(DbContextOptions<ClientContext> options) : base(options)
         {
         }
-
+        public DbSet<Domain.Models.Client> Client { get; set; }
         public DbSet<ClientPhysical> ClientPhysical { get; set; }
         public DbSet<ClientJuridical> ClientJuridical { get; set; }
         public DbSet<Address> Address { get; set; }

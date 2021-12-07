@@ -33,7 +33,7 @@ namespace AspNetCoreMvc.Client.Domain.Models.Validations
 
             RuleFor(x => x.Cpf.IsCpf())
                 .NotEqual(false)
-                .WithMessage("O Cnpj informado não é valido");
+                .WithMessage("O cpf informado não é valido");
         }
 
         private bool ValidateBirthDate(DateTime date)
